@@ -43,6 +43,17 @@ public class IntList {
         return new IntList(L.first + x, incrList(L.rest, x));
     }
 
+    /** Returns an IntList identical to L, but with all values incremented by x.
+     Not allowed to use ‘new’ (to save memory). */
+    public static IntList dincrList(IntList L, int x){
+        IntList dL = L;
+        while(dL.rest != null){
+            dL.first += x;
+            dL = dL.rest;
+        }
+        dL.first += x;
+        return L;
+    }
 
     public static void main(String[] args) {
         IntList L = new IntList(15, null);
