@@ -96,11 +96,31 @@ public class IntList {
      * Returns a list consisting of the elements of A followed by the
      * * elements of B.  May NOT modify items of A.  Use 'new'.
      */
+
+    /** Recursive version
     public static IntList catenate(IntList A, IntList B) {
         if(A == null){
             return B;
         }
         return new IntList(A.first, catenate(A.rest, B));
+    }
+    */
+
+    /**Iterative version*/
+    public static IntList catenate(IntList A, IntList B){
+        if(A == null){
+            return B;
+        }
+        IntList res = new IntList(A.first, A.rest);
+        IntList ptr = res;
+        A = A.rest;
+        while(ptr.rest != null){
+            ptr.rest = new IntList(A.first, A.rest);
+            A = A.rest;
+            ptr = ptr.rest;
+        }
+        ptr.rest = B;
+        return res;
     }
 
 
