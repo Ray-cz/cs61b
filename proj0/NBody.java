@@ -29,13 +29,13 @@ public class NBody {
 	}
 
 	// **Drawing the background */
-	public static void drawBackground(double r) {
+	private static void drawBackground(double r) {
 		StdDraw.setScale(-r, r);
 		StdDraw.picture(0, 0, "images/starfield.jpg");
 	}
 
 	/** Drawing all of the planets */
-	public static void drawAllPlanets(Planet[] planets, int total) {
+	private static void drawAllPlanets(Planet[] planets, int total) {
 		for (int i = 0; i < total; i++) {
 			planets[i].draw();
 		}
@@ -55,7 +55,7 @@ public class NBody {
 
 		StdDraw.enableDoubleBuffering();
 		int time = 0;
-		for (time = 0; time < T; time++) {
+		for (time = 0; time < T; time += dt) {
 			double xForces[] = new double[total];
 			double yForces[] = new double[total];
 			for (int i = 0; i < total; i++) {
@@ -74,8 +74,7 @@ public class NBody {
 		StdOut.printf("%d\n", planets.length);
 		StdOut.printf("%.2e\n", radius);
 		for (int i = 0; i < planets.length; i++) {
-			StdOut.printf("%11.4e %11.4e %11.4e %11.4e %11.4e %12s\n", 
-					planets[i].xxPos, planets[i].yyPos,
+			StdOut.printf("%11.4e %11.4e %11.4e %11.4e %11.4e %12s\n", planets[i].xxPos, planets[i].yyPos,
 					planets[i].xxVel, planets[i].yyVel, planets[i].mass, planets[i].imgFileName);
 		}
 	}
