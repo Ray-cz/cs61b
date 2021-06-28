@@ -34,14 +34,14 @@ public class Planet{
 	}
 
 	public double calcForceExertedByX(Planet p){
-		double dx = xxPos - p.xxPos;
+		double dx = p.xxPos - xxPos;
 		double uFx = calcForceExertedBy(p)*dx/calcDistance(p);
-		return uFx>0?uFx:-uFx;
+		return uFx;
 	}
 	public double calcForceExertedByY(Planet p){
-		double dy = yyPos - p.yyPos;
+		double dy = p.yyPos - yyPos;
 		double uFy = calcForceExertedBy(p)*dy/calcDistance(p);
-		return uFy>=0?uFy:-uFy;
+		return uFy;
 	}
 
 	public double calcNetForceExertedByX(Planet[] p){
