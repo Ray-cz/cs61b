@@ -49,10 +49,10 @@ public class NBody {
 		double radius = readRadius(filename);
 
 		int total = planets.length;
+		StdAudio.play("audio/2001.mid");
 
 		drawBackground(radius);
 		drawAllPlanets(planets, total);
-
 		StdDraw.enableDoubleBuffering();
 		int time = 0;
 		for (time = 0; time < T; time += dt) {
