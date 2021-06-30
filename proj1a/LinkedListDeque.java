@@ -4,7 +4,7 @@ public class LinkedListDeque<T> {
         private Node prev;
         private Node next;
 
-        public Node(T i, Node p, Node n) {
+        private Node(T i, Node p, Node n) {
             item = i;
             prev = p;
             next = n;
@@ -14,17 +14,12 @@ public class LinkedListDeque<T> {
     private Node sentinel;
     private static int size;
 
-    public LinkedListDeque(int x) {
-        sentinel = new Node(-1, sentinel, sentinel);
-        sentinel.next = sentinel.prev = new Node(x, sentinel, sentinel);
-        size = 1;
-    }
-
     public LinkedListDeque() {
-        sentinel = new Node(-1, sentinel, sentinel);
+        sentinel = new Node(-1, null, null);
+        sentinel.next = sentinel;
+        sentinel.prev = sentinel;
         size = 0;
     }
-
 
     public void addFirst(T item) {
         Node p = new Node(item, sentinel, sentinel.next);
@@ -55,7 +50,7 @@ public class LinkedListDeque<T> {
 
     public void printDeque() {
         Node p = sentinel.next;
-        while(p.next != sentinel) {
+        while (p.next != sentinel) {
             System.out.print(p.item);
             System.out.print(" ");
             p = p.next;
@@ -87,7 +82,7 @@ public class LinkedListDeque<T> {
         return result;
     }
 
-    public T get(int index){
+    public T get(int index) {
         if (index >= size) {
             return null;
         }
@@ -100,7 +95,7 @@ public class LinkedListDeque<T> {
     }
 
 
-    public Node getRecursive(int index, Node p) {
+    private Node getRecursive(int index, Node p) {
         if (index == 0) {
             return p;
         }
@@ -118,10 +113,9 @@ public class LinkedListDeque<T> {
     }
 
 
-
-    /**
+/**
     public static void main(String[] args) {
-        LinkedListDeque<Integer> L = new LinkedListDeque<>(5);
+        LinkedListDeque<Integer> L = new LinkedListDeque<>();
         L.addFirst(10);
         L.addFirst(20);
         L.addLast(8);
@@ -129,5 +123,5 @@ public class LinkedListDeque<T> {
         System.out.println(L.get(2));
         System.out.println(L.getRecursive(4));
     }
-     */
+*/
 }
