@@ -48,7 +48,7 @@ public class ArrayDeque<T> {
 
     private void checkSize() {
         double usage = 1.0 * size / capacity;
-        if(capacity < 8 || usage >= 0.25) {
+        if (capacity < 16 || usage >= 0.25 || isEmpty()) {
             return;
         }
         resize(size * 4);
@@ -107,14 +107,10 @@ public class ArrayDeque<T> {
     }
 
     public T get(int index) {
-        if (isEmpty() || index >= size) {
+        if (index >= size) {
             return null;
         }
-
-        if (nextFirst + 1 + index < capacity) {
-            return items[nextFirst + 1 + index];
-        }
-        return items[nextLast - (size - index)];
+        int first = advanceOne(nextFirst);
+        return items[Math.floorMod(first + index, capacity)];
     }
-
 }
