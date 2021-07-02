@@ -25,42 +25,59 @@ public class ArrayDeque<T> {
         return size;
     }
 
+    /**helper functions*/
+    private int advanceOne(int next) {
+        return Math.floorMod(next + 1, capacity);
+    }
+    private int backOne(int next) {
+        return Math.floorMod(next - 1, capacity);
+    }
+
     private void resize(int cap) {
         T[] a = (T[]) new Object[cap];
-        System.arraycopy(items, 0, a, 0, nextLast);
-        System.arraycopy(items, nextFirst + 1, a, nextLast + size
-                , capacity - nextLast);
-        nextFirst += size;
-        capacity = cap;
+        int index = advanceOne(nextFirst);
+        for (int i = 0; i < size; i++) {
+            a[i] = items[index];
+            index = advanceOne(index);
+        }
         items = a;
+        capacity = cap;
+        nextFirst = capacity - 1;
+        nextLast = size;
+    }
+
+    private void checkSize() {
+        double usage = 1.0 * size / capacity;
+        if(capacity < 8 || usage >= 0.25) {
+            return;
+        }
+        resize(size * 4);
     }
 
     public void addFirst(T item) {
         if (isFull()) {
-            resize(size*2);
+            resize(size * 2);
         }
         size += 1;
         items[nextFirst] = item;
-        nextFirst = (nextFirst - 1) % capacity;
+        nextFirst = backOne(nextFirst);
     }
 
     public void addLast(T item) {
         if (isFull()) {
-            resize(size*2);
+            resize(size * 2);
         }
         size += 1;
         items[nextLast] = item;
-        nextLast = (nextLast + 1) % capacity;
+        nextLast = advanceOne(nextLast);
     }
 
     public void printDeque() {
-        for(int i = nextFirst + 1; i < capacity; i++) {
-            System.out.print(items[i]);
+        int index = advanceOne(nextFirst);
+        for (int i = 0; i < size; i++) {
+            System.out.print(items[index]);
             System.out.print(' ');
-        }
-        for(int i = 0; i < nextLast; i++) {
-            System.out.print(items[i]);
-            System.out.print(' ');
+            index = advanceOne(index);
         }
         System.out.println();
     }
@@ -70,9 +87,10 @@ public class ArrayDeque<T> {
             return null;
         }
         size -= 1;
-        T result = items[nextFirst + 1];
-        items[nextFirst + 1] = null;
-        nextFirst = (nextFirst + 1) % capacity;
+        nextFirst = advanceOne(nextFirst);
+        T result = items[nextFirst];
+        items[nextFirst] = null;
+        checkSize();
         return result;
     }
 
@@ -81,36 +99,22 @@ public class ArrayDeque<T> {
             return null;
         }
         size -= 1;
-        T result = items[nextLast - 1];
-        items[nextLast - 1] = null;
-        nextLast = (nextLast - 1) % capacity;
+        nextLast = backOne(nextLast);
+        T result = items[nextLast];
+        items[nextLast] = null;
+        checkSize();
         return result;
     }
 
     public T get(int index) {
-        if (isEmpty()) {
+        if (isEmpty() || index >= size) {
             return null;
         }
+
         if (nextFirst + 1 + index < capacity) {
             return items[nextFirst + 1 + index];
         }
         return items[nextLast - (size - index)];
-    }
-
-
-    public static void main(String[] args) {
-        ArrayDeque<Integer> A = new ArrayDeque();
-        A.addFirst(1);
-        A.addFirst(2);
-        A.addLast(3);
-        A.addLast(5);
-        A.addFirst(4);
-        A.addFirst(4);
-        A.addFirst(4);
-        A.addFirst(4);
-        A.addFirst(9);
-
-        A.printDeque();
     }
 
 }
