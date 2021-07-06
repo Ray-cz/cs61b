@@ -66,6 +66,16 @@ public class IntListTest {
         assertEquals(IntList.of(1, 2, 3), A);
     }
 
+    @Test
+    public void testReverse() {
+        IntList A = IntList.of(1, 2, 3, 4);
+        IntList B = IntList.of(4, 3, 2, 1);
+        IntList C = IntList.reverse(A);
+        assertEquals(B, C);
+        assertNotEquals(A, C);
+        assertEquals(null, IntList.reverse(null));
+    }
+
     /** If you're running this from the command line, you'll need
       * to add a main method. See ArithmeticTest.java for an
       * example. */
