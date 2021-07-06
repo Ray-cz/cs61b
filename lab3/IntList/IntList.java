@@ -140,7 +140,7 @@ public class IntList {
             reversed = A;
             A = restOfList;
         }
-        return A;
+        return reversed;
     }
 
 
