@@ -21,4 +21,14 @@ public class Palindrome {
         Deque d = wordToDeque(word);
         return isPalindrome(d);
     }
+
+    public boolean isPalindrome(String word, CharacterComparator cc) {
+        int length = word.length();
+        for(int i = 0; i < length / 2; i++) {
+            if (!cc.equalChars(word.charAt(i), word.charAt(length - 1 - i))) {
+                return false;
+            }
+        }
+        return true;
+    }
 }
