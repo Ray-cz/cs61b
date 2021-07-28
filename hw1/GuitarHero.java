@@ -22,7 +22,7 @@ public class GuitarHero {
 
             /* compute the superposition of samples */
             double sample = 0.0;
-            for(GuitarString key: keyboard) {
+            for (GuitarString key: keyboard) {
                 sample += key.sample();
             }
 
