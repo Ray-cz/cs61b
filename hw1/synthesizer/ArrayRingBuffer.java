@@ -20,7 +20,7 @@ public class ArrayRingBuffer<T> extends AbstractBoundedQueue<T> {
         //       you'll need to use this.capacity to set the capacity.
         first = last = fillCount = 0;
         this.capacity = capacity;
-        rb = (T[])new Object[capacity];
+        rb = (T[]) new Object[capacity];
     }
 
     /**
@@ -67,4 +67,25 @@ public class ArrayRingBuffer<T> extends AbstractBoundedQueue<T> {
     }
 
     // TODO: When you get to part 5, implement the needed code to support iteration.
+    private class bufferIterator implements Iterator<T> {
+        private int count;
+        public bufferIterator() {
+            count = 0;
+        }
+
+        public boolean hasNext() {
+            return count < fillCount;
+        }
+
+        public T next() {
+            T result = peek();
+            count += 1;
+            return result;
+        }
+    }
+
+    @Override
+    public Iterator<T> iterator() {
+        return new bufferIterator();
+    }
 }
