@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class WorldGenerator {
-    private static final int MAXROOMS = 10;
+    private static final int MAXROOMS = 20;
     public static final int WIDTH = 60;
     public static final int HEIGHT = 40;
 
@@ -83,7 +83,7 @@ public class WorldGenerator {
         Random rand = new Random(11451);
 
         //initialize rooms
-        int roomNumber = rand.nextInt(MAXROOMS) ;
+        int roomNumber = rand.nextInt(MAXROOMS);
         System.out.println(roomNumber);
 
         ArrayList<Room> roomList =  drawRoom(world, rand, roomNumber);
