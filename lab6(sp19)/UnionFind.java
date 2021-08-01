@@ -3,7 +3,7 @@ import static org.junit.Assert.*;
 
 public class UnionFind {
 
-    private int[] parent;
+    public int[] parent;
 
     /* Creates a UnionFind data structure holding n vertices. Initially, all
        vertices are in disjoint sets. */
@@ -34,8 +34,7 @@ public class UnionFind {
        negative size of the tree for which v1 is the root. */
     public int parent(int v1) {
         validate(v1);
-        v1 = parent[v1];
-        return v1;
+        return parent[v1];
     }
 
     /* Returns true if nodes v1 and v2 are connected. */
@@ -67,11 +66,23 @@ public class UnionFind {
     /* Returns the root of the set V belongs to. Path-compression is employed
        allowing for fast search-time. */
     public int find(int vertex) {
+        int father = parent[vertex];
+        if (father < 0) {
+            return vertex;
+        }
+        int root = find(father);
+        parent[vertex] = root;
+        return root;
+    }
+
+    /* No path compression version
+    public int find(int vertex) {
         validate(vertex);
         while (parent[vertex] >= 0) {
             vertex = parent[vertex];
         }
         return vertex;
     }
+     */
 
 }
