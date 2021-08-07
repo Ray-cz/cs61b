@@ -5,7 +5,8 @@ import edu.princeton.cs.introcs.Stopwatch;
 
 public class Percolation {
     private int[][] system;
-    private WeightedQuickUnionUF openSites;
+    private WeightedQuickUnionUF openSites1; // with both top and bottom virtual site
+    private WeightedQuickUnionUF openSites2; // with only top virtual site
     private int topSite;
     private int bottomSite;
     private int numOfOpenSites;
@@ -18,7 +19,8 @@ public class Percolation {
         system = new int[N][N];
         topSite = N * N;
         bottomSite = N * N + 1;
-        openSites = new WeightedQuickUnionUF(N * N + 2);
+        openSites1 = new WeightedQuickUnionUF(N * N + 2);
+        openSites2 = new WeightedQuickUnionUF(N * N + 1);
         numOfOpenSites = 0;
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
@@ -47,25 +49,28 @@ public class Percolation {
         numOfOpenSites += 1;
         int site = xyTo1D(row, col);
         if (row == 0) {
-            openSites.union(topSite, site);
+            openSites1.union(topSite, site);
+            openSites2.union(topSite, site);
         }
         if (row == system.length - 1) {
-            if (isFull(row, col)) {
-                openSites.union(bottomSite, site);
-            }
+            openSites1.union(bottomSite, site);
         }
 
         if (row < system.length - 1 && isOpen(row + 1, col)) {
-            openSites.union(site, xyTo1D(row + 1, col));
+            openSites1.union(site, xyTo1D(row + 1, col));
+            openSites2.union(site, xyTo1D(row + 1, col));
         }
         if (row > 0 && isOpen(row - 1, col)) {
-            openSites.union(site, xyTo1D(row - 1, col));
+            openSites1.union(site, xyTo1D(row - 1, col));
+            openSites2.union(site, xyTo1D(row - 1, col));
         }
         if (col < system.length - 1 && isOpen(row, col + 1)) {
-            openSites.union(site, xyTo1D(row, col + 1));
+            openSites1.union(site, xyTo1D(row, col + 1));
+            openSites2.union(site, xyTo1D(row, col + 1));
         }
         if (col > 0 && isOpen(row, col - 1)) {
-            openSites.union(site, xyTo1D(row, col - 1));
+            openSites1.union(site, xyTo1D(row, col - 1));
+            openSites2.union(site, xyTo1D(row, col - 1));
         }
     }
     public boolean isOpen(int row, int col) {
@@ -74,13 +79,13 @@ public class Percolation {
     }
 
     public boolean isFull(int row, int col) {
-        return openSites.connected(xyTo1D(row, col), topSite);
+        return openSites2.connected(xyTo1D(row, col), topSite);
     }
     public int numberOfOpenSites() {
         return numOfOpenSites;
     }
     public boolean percolates() {
-        return openSites.connected(topSite, bottomSite);
+        return openSites1.connected(topSite, bottomSite);
     }
 
     public static void main(String[] args) {
