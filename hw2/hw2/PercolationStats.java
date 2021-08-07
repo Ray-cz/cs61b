@@ -2,7 +2,6 @@ package hw2;
 
 import edu.princeton.cs.introcs.StdRandom;
 import edu.princeton.cs.introcs.StdStats;
-import edu.princeton.cs.introcs.Stopwatch;
 
 public class PercolationStats {
     private double[] results;
@@ -20,7 +19,7 @@ public class PercolationStats {
                 int col = StdRandom.uniform(N);
                 p.open(row, col);
             }
-            double threshold = p.numberOfOpenSites() / (N * N);
+            double threshold = p.numberOfOpenSites() / (1.0 * N * N);
             results[i] = threshold;
         }
     }

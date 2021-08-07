@@ -50,7 +50,9 @@ public class Percolation {
             openSites.union(topSite, site);
         }
         if (row == system.length - 1) {
-            openSites.union(bottomSite, site);
+            if (isFull(row, col)) {
+                openSites.union(bottomSite, site);
+            }
         }
 
         if (row < system.length - 1 && isOpen(row + 1, col)) {
