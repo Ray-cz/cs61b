@@ -11,7 +11,7 @@ import java.util.Set;
  */
 public class MyHashMap<K, V> implements Map61B<K, V> {
 
-    private static final int DEFAULT_SIZE = 16;
+    private static final int DEFAULT_SIZE = 4;
     private static final double MAX_LF = 0.75;
 
     private ArrayMap<K, V>[] buckets;
@@ -53,19 +53,40 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
      */
     @Override
     public V get(K key) {
-        throw new UnsupportedOperationException();
+        if (key == null) {
+            throw new IllegalArgumentException();
+        }
+        return buckets[hash(key)].get(key);
     }
 
+    private void resize() {
+        ArrayMap[] newBuckets = new ArrayMap[size * 2];
+        System.arraycopy(buckets, 0, newBuckets, 0, size);
+        for (int i = size; i < size*2; i++) {
+            newBuckets[i] = new ArrayMap<>();
+        }
+        buckets = newBuckets;
+    }
     /* Associates the specified value with the specified key in this map. */
     @Override
     public void put(K key, V value) {
-        throw new UnsupportedOperationException();
+        if (key == null) {
+            throw new IllegalArgumentException();
+        }
+        if (loadFactor() > MAX_LF) {
+            resize();
+        }
+        int i = hash(key);
+        if (!buckets[i].containsKey(key)) {
+            size += 1;
+        }
+        buckets[i].put(key, value);
     }
 
     /* Returns the number of key-value mappings in this map. */
     @Override
     public int size() {
-        throw new UnsupportedOperationException();
+        return size;
     }
 
     //////////////// EVERYTHING BELOW THIS LINE IS OPTIONAL ////////////////
@@ -96,4 +117,14 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
     public Iterator<K> iterator() {
         throw new UnsupportedOperationException();
     }
+
+    public static void main(String[] args) {
+        MyHashMap m = new MyHashMap();
+        m.put(1, 'a');
+        m.put(2, 'b');
+        m.put(3, 'c');
+        m.put(4, 'd');
+        m.put(5, 'e');
+    }
 }
+
