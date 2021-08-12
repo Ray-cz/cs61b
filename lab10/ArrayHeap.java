@@ -41,6 +41,9 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
      * Returns the index of the node that is the parent of the node at i.
      */
     private static int parentIndex(int i) {
+        if (i == 1) {
+            return 1;
+        }
         return i / 2;
     }
 
@@ -122,7 +125,7 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
         int left = leftIndex(index);
         int right = rightIndex(index);
         int minChild = min(left, right);
-        if (min(minChild, index) == index|| !inBounds(left)) {
+        if (min(minChild, index) == index || !inBounds(left)) {
             return;
         }
         swap(index, minChild);
@@ -170,7 +173,9 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
         swap(1, size);
         contents[size] = null;
         size -= 1;
-        sink(1);
+        if (size > 0){
+            sink(1);
+        }
         return min;
     }
 
@@ -257,7 +262,7 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
             myPriority = priority;
         }
 
-        public T item(){
+        public T item() {
             return myItem;
         }
 
