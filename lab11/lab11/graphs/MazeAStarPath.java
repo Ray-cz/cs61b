@@ -1,5 +1,9 @@
 package lab11.graphs;
 
+import java.util.ArrayDeque;
+import java.util.PriorityQueue;
+import java.util.Queue;
+
 /**
  *  @author Josh Hug
  */
@@ -20,7 +24,7 @@ public class MazeAStarPath extends MazeExplorer {
 
     /** Estimate of the distance from v to the target. */
     private int h(int v) {
-        return -1;
+        return Math.abs(maze.toX(v) - maze.toX(t)) + Math.abs(maze.toY(v) - maze.toY(t));
     }
 
     /** Finds vertex estimated to be closest to target. */
@@ -31,7 +35,26 @@ public class MazeAStarPath extends MazeExplorer {
 
     /** Performs an A star search from vertex s. */
     private void astar(int s) {
-        // TODO
+        PriorityQueue<Node> fringe = new PriorityQueue<Node>();
+        fringe.add(new Node(s));
+        while (!fringe.isEmpty()) {
+            Node v = fringe.poll();
+            for (int w : maze.adj(v.index)) {
+                if (!marked[w]) {
+                    edgeTo[w] = v.index;
+                    distTo[w] = distTo[v.index] + 1;
+                    marked[w] = true;
+                    announce();
+                    if (w == t) {
+                        targetFound = true;
+                    }
+                    if (targetFound) {
+                        return;
+                    }
+                    fringe.add(new Node(w));
+                }
+            }
+        }
     }
 
     @Override
@@ -39,5 +62,18 @@ public class MazeAStarPath extends MazeExplorer {
         astar(s);
     }
 
+    private class Node implements Comparable<Node>{
+        int index;
+        int val;
+        public Node(int v) {
+            index = v;
+            val = distTo[v] + h(v);
+        }
+
+        @Override
+        public int compareTo(Node o) {
+            return this.val - o.val;
+        }
+    }
 }
 
