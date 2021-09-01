@@ -15,9 +15,17 @@ public class RadixSort {
      *
      * @return String[] the sorted array
      */
+    static final int RADIX = 256;
     public static String[] sort(String[] asciis) {
-        // TODO: Implement LSD Sort
-        return null;
+        int maxLength = Integer.MIN_VALUE;
+        for (String s : asciis) {
+            maxLength = Math.max(maxLength, s.length());
+        }
+        String[] res = asciis.clone();
+        for (int i = maxLength - 1; i >= 0; i--) {
+            res = sortHelperLSD(asciis, i);
+        }
+        return res;
     }
 
     /**
@@ -26,9 +34,35 @@ public class RadixSort {
      * @param asciis Input array of Strings
      * @param index The position to sort the Strings on.
      */
-    private static void sortHelperLSD(String[] asciis, int index) {
-        // Optional LSD helper method for required LSD radix sort
-        return;
+    private static String[] sortHelperLSD(String[] asciis, int index) {
+        int counts[] = new int[RADIX];
+        for (String s : asciis) {
+            if (index > s.length() - 1) {
+                counts[0]++;
+            } else {
+                counts[(int)s.charAt(index)]++;
+            }
+        }
+
+        int starts[] = new int[RADIX];
+        int pos = 0;
+        for (int i = 0; i < starts.length; i++) {
+            starts[i] = pos;
+            pos += counts[i];
+        }
+
+        String[] sorted = new String[asciis.length];
+        for (String s : asciis) {
+            if (index > s.length() - 1) {
+                sorted[starts[0]] = s;
+                starts[0]++;
+            } else {
+                int place = starts[(int)s.charAt(index)];
+                sorted[place] = s;
+                starts[(int)s.charAt(index)]++;
+            }
+        }
+        return sorted;
     }
 
     /**
@@ -44,5 +78,14 @@ public class RadixSort {
     private static void sortHelperMSD(String[] asciis, int start, int end, int index) {
         // Optional MSD helper method for optional MSD radix sort
         return;
+    }
+
+    public static void main(String[] args) {
+        String[] test = {"Ava", "Diana", "Bella", "Eileen", "Carol", "Nanami", "Dina", "Avavaava",
+                        "Aileen", "Kira", "Q", "Queen"};
+        String[] res = sort(test);
+        for (String s : res) {
+            System.out.println(s);
+        }
     }
 }
