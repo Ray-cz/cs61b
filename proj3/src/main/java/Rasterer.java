@@ -148,9 +148,9 @@ public class Rasterer {
         int x = -1;
         double xCord = 0.0;
         do {
-             xCord += depthXDist[depth];
-             x++;
-         } while (xDiff > xCord);
+            xCord += depthXDist[depth];
+            x++;
+        } while (xDiff > xCord);
         return x;
     }
     private int getY(double yDiff, int depth) {
