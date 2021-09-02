@@ -9,21 +9,21 @@ import java.util.Map;
  */
 public class Rasterer {
 
-    private final int MAXDEPTH = 7;
+    private final int MAX_DEPTH = 7;
     private double[] depthDPP;      // distance per pixel for every depth
     private double[] depthXDist;    // distance in x direction for every depth
-    private double[] depthYDist;
-    private int[] depthMaxSize;
+    private double[] depthYDist;    // distance in y direction for every depth
+    private int[] depthMaxSize;     // max size (number of pictures) for every depth
     public Rasterer() {
-        depthDPP = new double[MAXDEPTH + 1];
-        depthXDist = new double[MAXDEPTH + 1];
-        depthYDist = new double[MAXDEPTH + 1];
-        depthMaxSize = new int[MAXDEPTH + 1];
+        depthDPP = new double[MAX_DEPTH + 1];
+        depthXDist = new double[MAX_DEPTH + 1];
+        depthYDist = new double[MAX_DEPTH + 1];
+        depthMaxSize = new int[MAX_DEPTH + 1];
         depthXDist[0] = MapServer.ROOT_LRLON - MapServer.ROOT_ULLON;
         depthYDist[0] = MapServer.ROOT_ULLAT - MapServer.ROOT_LRLAT;
         depthDPP[0] = depthXDist[0] / MapServer.TILE_SIZE;
         depthMaxSize[0] = 1;
-        for (int i = 1; i < MAXDEPTH + 1; i++) {
+        for (int i = 1; i < MAX_DEPTH + 1; i++) {
             depthDPP[i] = depthDPP[i - 1] / 2;
             depthXDist[i] = depthXDist[i - 1] / 2;
             depthYDist[i] = depthYDist[i - 1] / 2;
@@ -63,72 +63,72 @@ public class Rasterer {
         System.out.println(params);
         Map<String, Object> results = new HashMap<>();
 
-        double param_lrlon = params.get("lrlon");
-        double param_ullon = params.get("ullon");
-        double param_ullat = params.get("ullat");
-        double param_lrlat = params.get("lrlat");
-        if (!validate(param_ullon, param_ullat, param_lrlon, param_lrlat)) {
+        double paramLrlon = params.get("lrlon");
+        double paramUllon = params.get("ullon");
+        double paramUllat = params.get("ullat");
+        double paramLrlat = params.get("lrlat");
+        if (!validate(paramUllon, paramUllat, paramLrlon, paramLrlat)) {
             results.put("query_success", false);
             System.out.println(results);
             return results;
         }
         double width = params.get("w");
-        double xDist = param_lrlon - param_ullon;
-        double lonDPP = xDist / width;
+        double xDist = paramLrlon - paramUllon;
+        double lonDPP = xDist / width;  // longitude distance per pixel
 
         // get depth
         int depth = getDepth(lonDPP);
 
-        // get xStart
-        double ul_xDiff = param_ullon - MapServer.ROOT_ULLON;
-        int xStart = getX(ul_xDiff, depth);
+        // get x index of leftmost picture
+        double ulXDiff = paramUllon - MapServer.ROOT_ULLON;
+        int xStart = getX(ulXDiff, depth);
 
         // get upper left longitude
-        double raster_ul_lon = MapServer.ROOT_ULLON + xStart * depthXDist[depth];
+        double rasterUlLon = MapServer.ROOT_ULLON + xStart * depthXDist[depth];
 
-        // get yStart
-        double ul_yDiff = MapServer.ROOT_ULLAT - param_ullat;
-        int yStart = getY(ul_yDiff, depth);
+        // get y index of leftmost picture
+        double ulYDiff = MapServer.ROOT_ULLAT - paramUllat;
+        int yStart = getY(ulYDiff, depth);
 
         // get upper left latitude
-        double raster_ul_lat = MapServer.ROOT_ULLAT - yStart * depthYDist[depth];
+        double rasterUlLat = MapServer.ROOT_ULLAT - yStart * depthYDist[depth];
 
-        // get xEnd
-        double lr_xDiff = param_lrlon - MapServer.ROOT_ULLON;
-        int xEnd = getX(lr_xDiff, depth);
-        if (xEnd > depthMaxSize[depth] - 1) {
+        // get x index of rightmost picture
+        double lrXDiff = paramLrlon - MapServer.ROOT_ULLON;
+        int xEnd = getX(lrXDiff, depth);
+        if (xEnd > depthMaxSize[depth] - 1) {   // check overbounding
             xEnd = depthMaxSize[depth] - 1;
         }
         // get lower right longitude
-        double raster_lr_lon = MapServer.ROOT_ULLON + (xEnd + 1) * depthXDist[depth];
+        double rasterLrLon = MapServer.ROOT_ULLON + (xEnd + 1) * depthXDist[depth];
 
-        // get yEnd
-        double lr_yDiff = MapServer.ROOT_ULLAT - param_lrlat;
-        int yEnd = getY(lr_yDiff, depth);
-        if (yEnd > depthMaxSize[depth] - 1) {
+        // get y index of rightmost picture
+        double lrYDiff = MapServer.ROOT_ULLAT - paramLrlat;
+        int yEnd = getY(lrYDiff, depth);
+        if (yEnd > depthMaxSize[depth] - 1) {   // check overbounding
             yEnd = depthMaxSize[depth] - 1;
         }
         // get lower right latitude
-        double raster_lr_lat = MapServer.ROOT_ULLAT - (yEnd + 1) * depthYDist[depth];
+        double rasterLrLat = MapServer.ROOT_ULLAT - (yEnd + 1) * depthYDist[depth];
 
+        // get picture grid
         String[][] grid = getGrid(xStart, yStart, xEnd, yEnd, depth);
 
-        results.put("raster_ul_lon", raster_ul_lon);
-        results.put("raster_ul_lat", raster_ul_lat);
+        results.put("raster_ul_lon", rasterUlLon);
+        results.put("raster_ul_lat", rasterUlLat);
         results.put("depth", depth);
-        results.put("raster_lr_lon", raster_lr_lon);
-        results.put("raster_lr_lat", raster_lr_lat);
+        results.put("raster_lr_lon", rasterLrLon);
+        results.put("raster_lr_lat", rasterLrLat);
         results.put("render_grid", grid);
         results.put("query_success", true);
 
         //System.out.println(results);
-
         return results;
     }
 
     private boolean validate(double ullon, double ullat, double lrlon, double lrlat) {
-        if (ullon >= MapServer.ROOT_LRLON || ullat <= MapServer.ROOT_LRLAT ||
-        lrlon <= MapServer.ROOT_ULLON || lrlat >= MapServer.ROOT_ULLAT) {
+        if (ullon >= MapServer.ROOT_LRLON || ullat <= MapServer.ROOT_LRLAT
+                || lrlon <= MapServer.ROOT_ULLON || lrlat >= MapServer.ROOT_ULLAT) {
             return false;
         }
         return true;
@@ -137,7 +137,7 @@ public class Rasterer {
         int depth = 1;
         while (dpp < depthDPP[depth]) {
             depth++;
-            if (depth >= MAXDEPTH) {
+            if (depth >= MAX_DEPTH) {
                 break;
             }
         }
@@ -147,10 +147,10 @@ public class Rasterer {
     private int getX(double xDiff, int depth) {
         int x = -1;
         double xCord = 0.0;
-         do {
-            xCord += depthXDist[depth];
-            x++;
-        } while (xDiff > xCord);
+        do {
+             xCord += depthXDist[depth];
+             x++;
+         } while (xDiff > xCord);
         return x;
     }
     private int getY(double yDiff, int depth) {
@@ -174,7 +174,4 @@ public class Rasterer {
         }
         return grid;
     }
-
-
-
 }
