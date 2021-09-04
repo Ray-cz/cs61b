@@ -1,5 +1,4 @@
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -25,8 +24,54 @@ public class Router {
      */
     public static List<Long> shortestPath(GraphDB g, double stlon, double stlat,
                                           double destlon, double destlat) {
-        return null; // FIXME
+
+        long start = g.closest(stlon, stlat);
+        long dest = g.closest(destlon, destlat);
+        g.changePriority(start, g.distance(start, dest));
+        PriorityQueue<Long> fringe = new PriorityQueue<>(g.getNodeComparator());
+        fringe.add(start);
+
+        Map<Long, Double> distTo = new HashMap<>();  // best known from source to every vertex
+        distTo.put(start, 0.0);
+        Map<Long, Long> edgeFrom = new HashMap<>();   // parent of every vertex (key: to, value: from)
+        Set<Long> marked = new HashSet<>();
+        while (!fringe.isEmpty()) {
+            Long v = fringe.poll();
+            if (marked.contains(v)) {
+                continue;
+            }
+            if (v == dest) {
+                break;
+            }
+            marked.add(v);
+            for (Long w : g.adjacent(v)) {
+                double dist = distTo.get(v) + g.distance(v, w);
+                if (!distTo.containsKey(w)) {
+                    distTo.put(w, Double.MAX_VALUE);
+                }
+                if (dist < distTo.get(w)) {
+                    distTo.put(w, dist);
+                    edgeFrom.put(w, v);
+                    g.changePriority(w, dist + g.distance(w, dest));
+                    fringe.add(w);
+                }
+            }
+        }
+        List<Long> route = new LinkedList<>();  // end-to-start route
+        long traveller = dest;
+        while (traveller != start) {
+            route.add(traveller);
+            traveller = edgeFrom.get(traveller);
+        }
+        route.add(start);
+        // reverse the route
+        List<Long> res = new LinkedList<>();
+        while (!route.isEmpty()) {
+            res.add(route.remove(route.size() - 1));
+        }
+        return res;
     }
+
 
     /**
      * Create the list of directions corresponding to a route on the graph.

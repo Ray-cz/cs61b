@@ -199,12 +199,17 @@ public class GraphDB {
         ways.put(w.id, w);
     }
 
+    Map<Long, Node> getNodes() {
+        return nodes;
+    }
+
     static class Node {
         long id;
         double lon;
         double lat;
         String name;
         Set<Long> adj = new HashSet<>();
+        double priority = 0.0;  // for v -> w, distance from source to v + distance from w to goal
 
         public Node(long id, double lon, double lat) {
             this.id = id;
@@ -217,6 +222,22 @@ public class GraphDB {
             this.lat = lat;
             this.name = name;
         }
+    }
+
+    class NodeComparator implements Comparator<Long> {
+
+        @Override
+        public int compare(Long o1, Long o2) {
+            return Double.compare(nodes.get(o1).priority, nodes.get(o2).priority);
+        }
+    }
+
+    public Comparator<Long> getNodeComparator() {
+        return new NodeComparator();
+    }
+
+    void changePriority(Long v, double p) {
+        nodes.get(v).priority = p;
     }
 
     static class Way {
