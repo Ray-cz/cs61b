@@ -23,6 +23,7 @@ public class GraphDB {
 
     private final Map<Long, Node> nodes = new HashMap<>();
     private final Map<Long, Way> ways = new HashMap<>();
+    public final Trie locationTrie = new Trie();
     /**
      * Example constructor shows how to create and start an XML parser.
      * You do not need to modify this constructor, but you're welcMome to do so.
@@ -254,8 +255,6 @@ public class GraphDB {
         }
     }
 
-
-
     static class Way {
         long id;
         String maxSpeed;
@@ -265,4 +264,5 @@ public class GraphDB {
             this.id = id;
         }
     }
+
 }
