@@ -82,7 +82,69 @@ public class Router {
      * route.
      */
     public static List<NavigationDirection> routeDirections(GraphDB g, List<Long> route) {
-        return null; // FIXME
+        // This function still has much room for improvement
+        List<NavigationDirection> guide = new LinkedList<>();
+        NavigationDirection nvg = new NavigationDirection();
+        nvg.direction = NavigationDirection.START;
+        nvg.way = g.getWayName(getWay(g, route.get(0), route.get(1)));
+        nvg.distance += g.distance(route.get(0), route.get(1));
+        for (int i = 1; i + 1 < route.size(); i++) {
+            long prev = route.get(i - 1);
+            long curr = route.get(i);
+            long next = route.get(i + 1);
+            if (changeWay(g, prev, curr, next)) {
+                guide.add(nvg);
+                nvg = new NavigationDirection();
+                nvg.direction = getDirection(g, prev, curr, next);
+                nvg.way = g.getWayName(getWay(g, curr, next));
+                nvg.distance += g.distance(curr, next);
+            } else {
+                nvg.distance += g.distance(curr, next);
+            }
+        }
+        guide.add(nvg);
+        return guide;
+    }
+
+    private static boolean changeWay(GraphDB g, long prev, long curr, long next) {
+        for (long w : g.getWayOn(next)) {
+            if (g.getWayOn(prev).contains(w)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static long getWay(GraphDB g, long curr, long next) {
+        long nextWay = 0;
+        for (long w : g.getWayOn(next)) {
+            if (g.getWayOn(curr).contains(w)) {
+                nextWay = w;
+                break;
+            }
+        }
+        return nextWay;
+    }
+
+    private static int getDirection(GraphDB g, long p, long c, long n) {
+        double prevBearing = g.bearing(p, c);
+        double currBearing = g.bearing(c, n);
+        double rb = currBearing - prevBearing;
+        if (rb < -100) {
+            return NavigationDirection.SHARP_LEFT;
+        } else if (rb < - 30) {
+            return NavigationDirection.LEFT;
+        } else if (rb < -15) {
+            return NavigationDirection.SHARP_LEFT;
+        } else if (rb < 15) {
+            return NavigationDirection.STRAIGHT;
+        } else if (rb < 30) {
+            return NavigationDirection.SLIGHT_RIGHT;
+        } else if (rb < 100) {
+            return NavigationDirection.RIGHT;
+        } else {
+            return NavigationDirection.SHARP_RIGHT;
+        }
     }
 
 

@@ -208,6 +208,7 @@ public class GraphDB {
         double lon;
         double lat;
         String name;
+        Set<Long> wayOn = new HashSet<>();
         Set<Long> adj = new HashSet<>();
         double priority = 0.0;  // for v -> w, distance from source to v + distance from w to goal
 
@@ -236,9 +237,24 @@ public class GraphDB {
         return new NodeComparator();
     }
 
-    void changePriority(Long v, double p) {
+    void changePriority(long v, double p) {
         nodes.get(v).priority = p;
     }
+
+    Set<Long> getWayOn(long v) {
+        return nodes.get(v).wayOn;
+    }
+
+
+    String getWayName(long wayId) {
+        if (ways.get(wayId).name != null) {
+            return ways.get(wayId).name;
+        } else {
+            return "unknown road";
+        }
+    }
+
+
 
     static class Way {
         long id;
@@ -248,7 +264,5 @@ public class GraphDB {
         public Way(long id) {
             this.id = id;
         }
-
-
     }
 }

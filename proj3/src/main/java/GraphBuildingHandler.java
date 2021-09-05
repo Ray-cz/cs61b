@@ -92,6 +92,7 @@ public class GraphBuildingHandler extends DefaultHandler {
             //System.out.println("Id of a node in this way: " + attributes.getValue("ref"));
             long refNode = Long.parseLong(attributes.getValue("ref"));
             wayNodes.add(refNode);
+            g.getNodes().get(refNode).wayOn.add(currWay.id);
             /* Hint1: It would be useful to remember what was the last node in this way. */
             /* Hint2: Not all ways are valid. So, directly connecting the nodes here would be
             cumbersome since you might have to remove the connections if you later see a tag that
