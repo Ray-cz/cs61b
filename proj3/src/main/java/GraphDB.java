@@ -21,9 +21,10 @@ public class GraphDB {
     /** Your instance variables for storing the graph. You should consider
      * creating helper classes, e.g. Node, Edge, etc. */
 
-    private final Map<Long, Node> nodes = new HashMap<>();
+    public final Map<Long, Node> nodes = new HashMap<>();
     private final Map<Long, Way> ways = new HashMap<>();
     public final Trie locationTrie = new Trie();
+    public Map<String, List<Long>> locations = new HashMap<>();
     /**
      * Example constructor shows how to create and start an XML parser.
      * You do not need to modify this constructor, but you're welcMome to do so.
@@ -240,6 +241,32 @@ public class GraphDB {
 
     void changePriority(long v, double p) {
         nodes.get(v).priority = p;
+    }
+
+    List<Map<String, Object>> searchLocations(String name) {
+        List<Map<String, Object>> res = new LinkedList<>();
+        if (locations.containsKey(name)) {
+            for (long v : locations.get(name)) {
+                Node n = nodes.get(v);
+                Map<String, Object> info = new HashMap<>();
+                info.put("lat", n.lat);
+                info.put("lon", n.lon);
+                info.put("name", n.name);
+                info.put("id", n.id);
+                res.add(info);
+            }
+        }
+        return res;
+    }
+
+    void addLocation(String name, long n) {
+        if (locations.containsKey(name)) {
+            locations.get(name).add(n);
+        } else {
+            List<Long> ids = new LinkedList<>();
+            ids.add(n);
+            locations.put(name, ids);
+        }
     }
 
     Set<Long> getWayOn(long v) {

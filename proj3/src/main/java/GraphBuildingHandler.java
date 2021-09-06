@@ -77,7 +77,6 @@ public class GraphBuildingHandler extends DefaultHandler {
             double lat = Double.parseDouble(attributes.getValue("lat"));
             currNode = new GraphDB.Node(id, lon, lat);
             g.addNode(currNode);
-
         } else if (qName.equals("way")) {
             /* We encountered a new <way...> tag. */
             activeState = "way";
@@ -127,6 +126,7 @@ public class GraphBuildingHandler extends DefaultHandler {
             /* While looking at a node, we found a <tag...> with k="name". */
             String location = attributes.getValue("v");
             currNode.name = location;
+            g.addLocation(location, currNode.id);
             g.locationTrie.insert(location, GraphDB.cleanString(location));
             /* Hint: Since we found this <tag...> INSIDE a node, we should probably remember which
             node this tag belongs to. Remember XML is parsed top-to-bottom, so probably it's the
